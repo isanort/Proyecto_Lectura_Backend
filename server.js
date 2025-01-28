@@ -1,6 +1,7 @@
 import express from 'express';
 import morgan from 'morgan';
 import {v4 as uuidv4} from 'uuid';
+import cors from 'cors';
 
 const app = express();
 uuidv4();
@@ -28,6 +29,7 @@ let lists = [
 
 app.use(express.json());
 app.use(morgan('tiny'));
+app.use(cors());
 
 // API  
 
