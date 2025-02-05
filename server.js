@@ -7,7 +7,7 @@ const app = express();
 uuidv4();
 
 let books = [
-    { id: '1', bookcover: 'img', title: 'Matrix', author:'Autor', rating: 3, genre: "science-fiction", format: 'harcover', toread: false, fav: true, owned: true, limitededition: false },
+    { id: '1', bookcover: urlencoded(), title: 'Matrix', author:'Autor', rating: 3, genre: "science-fiction", format: 'harcover', toread: false, fav: true, owned: true, limitededition: false, summary: "summary of the book", pages: 100, published: 2010, dateread: Date(2010, 12, 30) },
     { id: '2', bookcover: 'img', title: 'Libro2', author:'Autores', rating: 5, genre: "narrative", format: 'ebook', toread: true, fav: false, owned: true, limitededition: true },
 ];
 
@@ -18,14 +18,18 @@ let lists = [
     {
         name: "Para dormir",
         description: "Por la noche",
-        id: "1"
+        id: "10",
+        booksInList: []
     },
     {
         name: "Para despertar",
         description: "Por la mañana",
-        id: "2"
+        id: "20",
+        booksInList: [{id:1}]
     }
 ]
+
+let genres = ["narrative"];
 
 app.use(express.json());
 app.use(morgan('tiny'));
@@ -121,6 +125,14 @@ app.get('/books/:id', (req, res) => {
     res.json(book);
 });
 
+//Get a random book
+app.get('/books/random', (req, res) => {
+    const bookId = req.body;
+    const book = books.find((book) => book.id == bookId);
+    res.json(book);
+});
+
+
 //Create a book
 app.post('/books/', (req, res) => {
     const postBook = req.body;
@@ -204,6 +216,14 @@ app.get('/books/genres/:genre', (req, res) => {
 });
 
 //genre list: buscar todos los géneros y mostar el nombre ------
+app.get('/books/genres/', (req, res) => {
+    const listGenres = books.map(book =>
+        book.genre);
+    //books.forEach(function(obj){genres.push(obj.genre)})
+    res.json(listGenres);
+});
+
+
 
 //Get format books
 app.get('/books/format/:format', (req, res) => {
@@ -219,8 +239,15 @@ app.post('/lists', (req, res) => {
     res.json(newList);
 });
 
+//Get a list
+app.get('/lists/:id', (req, res) => {
+    const listId = req.params.id;
+    const list = lists.find((list) => list.id == listId);
+    res.json(list);
+});
+
 //Modify a list - no funciona
-app.patch('/lists/:id', (req, res) => {
+app.patch('/lists/:id/modify', (req, res) => {
     const listId = req.params.id;
     const list = lists.find((list) => list.id == listId);
 
@@ -242,11 +269,38 @@ app.patch('/lists/:id', (req, res) => {
             ...listUpt,
             description
         }
+
     }
 
     lists[lists.indexOf(list)] = listUpt;
     res.json(listUpt);;
 })
+
+//patch para listas del usuario- añadir libro a lista
+//Add books to a list -no funciona
+app.patch('/lists/:id/addbooks', (req, res) => {
+    const listId = req.params.id;
+    const list = lists.find((list) => list.id == listId);
+    
+    let listUpt = {
+        ...list
+    };
+
+    if (req.body) {
+        const newBooks = req.body;   
+        lists.booksInList.push(...newBooks);
+        listUpt = {
+            ...listUpt,
+            booksInList
+        }
+    };
+        //newBooks.forEach((book) => { list.booksInList.push(book);
+        //const booksInList = newBooks.forEach((book) => {list.booksInList.push(book)
+
+    lists[lists.indexOf(list)] = listUpt;
+    res.json(listUpt);
+});
+
 
 //Get all lists
 app.get('/lists', (req, res) => {
@@ -262,7 +316,7 @@ app.delete('/lists/:id', (req, res) => {
     res.json(lists); //mensaje de confirmación
 });
 
-//patch para listas del usuario- añadir libro a lista
+
 
 app.listen(3000, () => {
     console.log('Ready on port 3000!');
