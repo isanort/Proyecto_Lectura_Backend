@@ -7,7 +7,22 @@ const app = express();
 uuidv4();
 
 let books = [
-    { id: '1', bookcover: urlencoded(), title: 'Matrix', author:'Autor', rating: 3, genre: "science-fiction", format: 'harcover', toread: false, fav: true, owned: true, limitededition: false, summary: "summary of the book", pages: 100, published: 2010, dateread: Date(2010, 12, 30) },
+    { id: '1', bookcover: 'image', 
+        title: 'Matrix', 
+        author:'Autor', 
+        rating: 3, 
+        genre: "science-fiction", 
+        format: 'harcover', 
+        toread: false, 
+        fav: true, 
+        owned: true, 
+        limitededition: false, 
+        summary: 'summary of the book', 
+        pages: 100, 
+        published: 2010, 
+        dateread: Date(2010, 12, 30) ,
+        customlists: [{id:10}],//id de las listas
+    },
     { id: '2', bookcover: 'img', title: 'Libro2', author:'Autores', rating: 5, genre: "narrative", format: 'ebook', toread: true, fav: false, owned: true, limitededition: true },
 ];
 
@@ -211,18 +226,24 @@ app.patch('/books/:id', (req, res) => {
 
 //Get genre books
 app.get('/books/genres/:genre', (req, res) => {
+    console.log("adiós");
     const genreBooks = books.filter((book) => book.genre === req.params.genre);
     res.json(genreBooks);
 });
 
 //genre list: buscar todos los géneros y mostar el nombre ------
-app.get('/books/genres/', (req, res) => {
-    const listGenres = books.map(book =>
-        book.genre);
+app.get('/books/allgenres/', (req, res) => {
+    console.log("hola");
+    const listGenres = books.map(book => {
+        const genre = book.genre;
+        console.log(1, genre);
+        return genre
+    });
+    
     //books.forEach(function(obj){genres.push(obj.genre)})
+    console.log(2, listGenres);
     res.json(listGenres);
 });
-
 
 
 //Get format books
@@ -272,33 +293,33 @@ app.patch('/lists/:id/modify', (req, res) => {
 
     }
 
-    lists[lists.indexOf(list)] = listUpt;
-    res.json(listUpt);;
+    const listnum = lists.indexOf(list);
+    lists[listnum] = listUpt;
+    console.log(1, listnum);
+    console.log(1, lists);
+    res.json(listUpt);
 })
 
 //patch para listas del usuario- añadir libro a lista
-//Add books to a list -no funciona
+//Add books to a list
 app.patch('/lists/:id/addbooks', (req, res) => {
     const listId = req.params.id;
     const list = lists.find((list) => list.id == listId);
-    
-    let listUpt = {
-        ...list
-    };
+
 
     if (req.body) {
-        const newBooks = req.body;   
-        lists.booksInList.push(...newBooks);
-        listUpt = {
-            ...listUpt,
-            booksInList
-        }
+        const idBooks = req.body;
+        idBooks.forEach((bookId) => { 
+            const book = books.find((book) => book.id == bookId);
+            list.booksInList.push(book);
+        })
+
     };
         //newBooks.forEach((book) => { list.booksInList.push(book);
         //const booksInList = newBooks.forEach((book) => {list.booksInList.push(book)
 
-    lists[lists.indexOf(list)] = listUpt;
-    res.json(listUpt);
+
+    res.json(list);
 });
 
 
