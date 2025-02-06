@@ -2,18 +2,39 @@ import express from 'express';
 import morgan from 'morgan';
 import {v4 as uuidv4} from 'uuid';
 import cors from 'cors';
+import { MongoClient } from 'mongodb';
 
 const app = express();
 uuidv4();
 
-let books = [
+// URL de conexión a MongoDB y nombre de la base de datos
+const mongoUrl = 'mongodb://localhost:27017';
+const dbName = 'MY_BOOKS_DB';
+
+// Variable para almacenar la conexión a la base de datos
+let db; 
+
+// Conectar a MongoDB
+MongoClient.connect(mongoUrl, {useNewUrlParser: true, useUnifiedTopology: true})
+.then(client => {
+    console.log('Conectado a MongoDB');
+    db = client.db(dbName); // Asignar la base de datos
+})
+.catch(err => {
+console.error('Error al conectar a MongoDB:', err);
+});
+
+const booksCollection = db.collection('BOOKS');
+
+
+let boos = [
     { id: '1', bookcover: 'image', 
         title: 'Matrix', 
         author:'Autor', 
         rating: 3, 
         genre: "science-fiction", 
         format: 'harcover', 
-        toread: false, 
+        toread: true, 
         fav: true, 
         owned: true, 
         limitededition: false, 
@@ -26,7 +47,7 @@ let books = [
     { id: '2', bookcover: 'img', title: 'Libro2', author:'Autores', rating: 5, genre: "narrative", format: 'ebook', toread: true, fav: false, owned: true, limitededition: true },
 ];
 
-// add pagecount, date read, endspoint for random book
+// endspoint for random book. listado de libros para añadir
 // two collections: mybooks (quick access). allthebooks
 
 let lists = [
@@ -52,9 +73,29 @@ app.use(cors());
 
 // API  
 
+//Get a book
+app.get('/books/id/:id', async (req, res) => {
+    try {
+        const bookId = req.params.id;
+        const book = await booksCollection.findOne({id: bookId});
+        res.json(book); 
+    } 
+    catch (error) { 
+        console.error('Error al obtener un libto:', error);
+        res.status(500).json({ error: 'Hubo un problema al obtener un libro' }); 
+    } 
+}); 
+
 //Get all books
-app.get('/books', (req, res) => {
-    res.json(books);
+app.get('/books', async (req, res) => {
+    try {
+        const books = await booksCollection.find().toArray();
+        res.json(books);
+    }
+    catch (error) { 
+        console.error('Error al obtener todos los libros:', error);
+        res.status(500).json({ error: 'Hubo un problema al obtener un libro' }); 
+    } 
 });
 
 //Get toread books
@@ -63,7 +104,7 @@ app.get('/books/toread', (req, res) => {
     res.json(toreadBooks);
 });
 
-//Modify toread    ID DONDE
+//Modify toread    ID después de elemento
 app.patch('/books/:id/toread', (req, res) => {
     const bookId = req.params.id;
     const book = books.find((book) => book.id == bookId);
@@ -133,16 +174,19 @@ app.patch('/books/:id/limitededition', (req, res) => {
     res.status(200).send('OK');
 });
 
-//Get a book
-app.get('/books/:id', (req, res) => {
-    const bookId = req.params.id;
-    const book = books.find((book) => book.id == bookId);
-    res.json(book);
-});
 
-//Get a random book
+//Get a random book Math.floor
 app.get('/books/random', (req, res) => {
-    const bookId = req.body;
+    console.log("holaaa");
+    //array todos libros
+    const toReadBooks = books.filter((book) => book.toread === true);
+    //obtener id
+    const idtoReadbooks = toReadBooks.map(book => {
+        const id = book.id;
+        return id
+    });
+    //random
+    const bookId = Math.floor(Math.random()*(idtoReadbooks.length +1));
     const book = books.find((book) => book.id == bookId);
     res.json(book);
 });
