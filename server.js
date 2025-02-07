@@ -76,18 +76,40 @@ app.get('/books', async (req, res) => {
     }
     catch (error) { 
         console.error('Error al obtener todos los libros:', error);
-        res.status(500).json({ error: 'Hubo un problema al obtener un libro' }); 
+        res.status(500).json({ error: 'Hubo un problema al obtener todos los libros' }); 
     } 
 });
 
 //Get toread books
-app.get('/books/toread', (req, res) => {
-    const toreadBooks = books.filter((book) => book.toread === true);
-    res.json(toreadBooks);
+app.get('/books/toread', async (req, res) => {
+    try {
+        const toreadBooks = await booksCollection.find({toread: true}).toArray();
+        res.json(toreadBooks);
+    }
+    catch (error) { 
+        console.error('Error al obtener los libros para leer:', error);
+        res.status(500).json({ error: 'Hubo un problema al obtener los libros para leer' }); 
+    } 
 });
 
 //Modify toread    ID después de elemento
 app.patch('/books/:id/toread', (req, res) => {
+    try { 
+        const bookId = req.params.id;
+        const book = await db.collection(booksCollection).findOne({id: bookId});
+        //modificar toread
+        //updatebook
+        res.json(//updatebook);
+        console.log("The book is updated(toread)");
+    } 
+    catch (error) { 
+        console.error('Error al obtener un libro:', error);
+        res.status(500).json({ error: 'Hubo un problema al obtener un libro' }); 
+    } 
+}); 
+
+
+
     const bookId = req.params.id;
     const book = books.find((book) => book.id == bookId);
     const toread = !book.toread;
@@ -97,13 +119,20 @@ app.patch('/books/:id/toread', (req, res) => {
     };
     books[books.indexOf(book)] = bookUpt;
     res.status(200).send('OK');
-});
+
 
 //Get fav books
-app.get('/books/fav', (req, res) => {
-    const favBooks = books.filter((book) => book.fav === true);
-    res.json(favBooks);
+app.get('/books/fav', async (req, res) => {
+    try {
+        const favBooks = await booksCollection.find({fav: true}).toArray();
+        res.json(favBooks);
+    }
+    catch (error) { 
+        console.error('Error al obtener los libros favoritos:', error);
+        res.status(500).json({ error: 'Hubo un problema al obtener los libros favoritos' }); 
+    } 
 });
+
 
 //Modify fav
 app.patch('/books/:id/fav', (req, res) => {
@@ -119,9 +148,15 @@ app.patch('/books/:id/fav', (req, res) => {
 });
 
 //Get owned books
-app.get('/books/owned', (req, res) => {
-    const ownBooks = books.filter((book) => book.owned === true);
-    res.json(ownBooks);
+app.get('/books/owned', async (req, res) => {
+    try {
+        const ownedBooks = await booksCollection.find({owned: true}).toArray();
+        res.json(ownedBooks);
+    }
+    catch (error) { 
+        console.error('Error al obtener los libros que tienes:', error);
+        res.status(500).json({ error: 'Hubo un problema al obtener los libros que tienes' }); 
+    } 
 });
 
 //Modify owned
@@ -137,31 +172,12 @@ app.patch('/books/:id/owned', (req, res) => {
     res.status(200).send('OK');
 });
 
-//Get limited edition books
-app.get('/books/limitededition', (req, res) => {
-    const limBooks = books.filter((book) => book.limitededition === true);
-    res.json(limBooks);
-});
 
-//Modify limited edition
-app.patch('/books/:id/limitededition', (req, res) => {
-    const bookId = req.params.id;
-    const book = books.find((book) => book.id == bookId);
-    const limitededition = !book.limitededition;
-    let bookUpt = {
-        ...book,
-        limitededition
-    };
-    books[books.indexOf(book)] = bookUpt;
-    res.status(200).send('OK');
-});
-
-
-//Get a random book Math.floor
+//Get a random book Math.floor ---no funciona
 app.get('/books/random', (req, res) => {
-    console.log("holaaa");
     //array todos libros
-    const toReadBooks = books.filter((book) => book.toread === true);
+    const toReadBooks = await booksCollection.find({toread: true}).toArray();
+    //const toReadBooks = books.filter((book) => book.toread === true);
     //obtener id
     const idtoReadbooks = toReadBooks.map(book => {
         const id = book.id;
@@ -251,11 +267,18 @@ app.patch('/books/:id', (req, res) => {
 })
 
 //Get genre books
-app.get('/books/genres/:genre', (req, res) => {
-    console.log("adiós");
-    const genreBooks = books.filter((book) => book.genre === req.params.genre);
-    res.json(genreBooks);
-});
+app.get('/books/genres/:genre', async (req, res) => {
+    try { 
+        const bookGenre = req.params.genre;
+        const books = await db.collection(booksCollection).find({genre: bookGenre}).toArray();
+        res.json(books);
+    } 
+    catch (error) { 
+        console.error('Error al obtener los libros de un género:', error);
+        res.status(500).json({ error: 'Hubo un problema al obtener los libros de un género' }); 
+    } 
+}); 
+
 
 //genre list: buscar todos los géneros y mostar el nombre ------
 app.get('/books/allgenres/', (req, res) => {
@@ -273,9 +296,29 @@ app.get('/books/allgenres/', (req, res) => {
 
 
 //Get format books
-app.get('/books/format/:format', (req, res) => {
-    const formatBooks = books.filter((book) => book.format === req.params.format);
-    res.json(formatBooks);
+app.get('/books/format/:format', async (req, res) => {
+    try { 
+        const bookFormat = req.params.genre;
+        const books = await db.collection(booksCollection).find({genre: bookFormat}).toArray();
+        res.json(books);
+    } 
+    catch (error) { 
+        console.error('Error al obtener los libros de un formato:', error);
+        res.status(500).json({ error: 'Hubo un problema al obtener los libros de un formato'}); 
+    } 
+});
+
+//Get language books
+app.get('/books/language/:language', async (req, res) => {
+    try { 
+        const bookLanguage = req.params.language;
+        const books = await db.collection(booksCollection).find({language: bookLanguage}).toArray();
+        res.json(books);
+    } 
+    catch (error) { 
+        console.error('Error al obtener los libros de un idioma:', error);
+        res.status(500).json({ error: 'Hubo un problema al obtener los libros de un idioma'}); 
+    } 
 });
 
 //Create a new list
@@ -338,6 +381,7 @@ app.patch('/lists/:id/addbooks', (req, res) => {
         idBooks.forEach((bookId) => { 
             const book = books.find((book) => book.id == bookId);
             list.booksInList.push(book);
+            book.lists.push(listId);
         })
 
     };
