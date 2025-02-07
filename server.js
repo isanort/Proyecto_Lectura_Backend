@@ -2,32 +2,42 @@ import express from 'express';
 import morgan from 'morgan';
 import {v4 as uuidv4} from 'uuid';
 import cors from 'cors';
-import { MongoClient } from 'mongodb';
+import { MongoClient, ObjectId} from 'mongodb';
+
 
 const app = express();
+
+app.use(cors());
+app.use(express.json());
+app.use(morgan('tiny'));
+
 uuidv4();
 
 // URL de conexión a MongoDB y nombre de la base de datos
 const mongoUrl = 'mongodb://localhost:27017';
 const dbName = 'MY_BOOKS_DB';
+const booksCollection = 'BOOKS';
 
 // Variable para almacenar la conexión a la base de datos
 let db; 
 
 // Conectar a MongoDB
+
+//const ObjectID = require('mongodb').ObjectID;
+
 MongoClient.connect(mongoUrl, {useNewUrlParser: true, useUnifiedTopology: true})
-.then(client => {
-    console.log('Conectado a MongoDB');
-    db = client.db(dbName); // Asignar la base de datos
-})
-.catch(err => {
-console.error('Error al conectar a MongoDB:', err);
-});
+    .then(client => {
+        console.log('Conectado a MongoDB');
+        db = client.db(dbName); // Asignar la base de datos
+        //app.listen(5000, () => {
+            //console.log('server is running on port 5000');
+            //});
+        })
+    .catch(err => {
+        console.error('Error al conectar a MongoDB:', err);
+        });
 
-const booksCollection = db.collection('BOOKS');
-
-
-let boos = [
+/*let books = [
     { id: '1', bookcover: 'image', 
         title: 'Matrix', 
         author:'Autor', 
@@ -65,23 +75,20 @@ let lists = [
     }
 ]
 
-let genres = ["narrative"];
-
-app.use(express.json());
-app.use(morgan('tiny'));
-app.use(cors());
+let genres = ["narrative"];*/
 
 // API  
 
 //Get a book
 app.get('/books/id/:id', async (req, res) => {
-    try {
+    try { 
         const bookId = req.params.id;
-        const book = await booksCollection.findOne({id: bookId});
-        res.json(book); 
+        const book = await db.collection(booksCollection).findOne({id: bookId});
+        res.json(book);
+        console.log("The book is in server");
     } 
     catch (error) { 
-        console.error('Error al obtener un libto:', error);
+        console.error('Error al obtener un libro:', error);
         res.status(500).json({ error: 'Hubo un problema al obtener un libro' }); 
     } 
 }); 
