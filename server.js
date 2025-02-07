@@ -38,22 +38,7 @@ MongoClient.connect(mongoUrl, {useNewUrlParser: true, useUnifiedTopology: true})
         });
 
 /*let books = [
-    { id: '1', bookcover: 'image', 
-        title: 'Matrix', 
-        author:'Autor', 
-        rating: 3, 
-        genre: "science-fiction", 
-        format: 'harcover', 
-        toread: true, 
-        fav: true, 
-        owned: true, 
-        limitededition: false, 
-        summary: 'summary of the book', 
-        pages: 100, 
-        published: 2010, 
-        dateread: Date(2010, 12, 30) ,
-        customlists: [{id:10}],//id de las listas
-    },
+    { id: '1', bookcover: 'image', author:'Autor', title: 'Matrix', genre: "science-fiction", format: 'harcover', toread: true, rating: 3, fav: true, owned: true, limitededition: false, summary: 'summary of the book', pages: 100, published: 2010, dateread: Date(2010, 12, 30) ,customlists: [{id:10}],//id de las listas},
     { id: '2', bookcover: 'img', title: 'Libro2', author:'Autores', rating: 5, genre: "narrative", format: 'ebook', toread: true, fav: false, owned: true, limitededition: true },
 ];
 
@@ -61,18 +46,8 @@ MongoClient.connect(mongoUrl, {useNewUrlParser: true, useUnifiedTopology: true})
 // two collections: mybooks (quick access). allthebooks
 
 let lists = [
-    {
-        name: "Para dormir",
-        description: "Por la noche",
-        id: "10",
-        booksInList: []
-    },
-    {
-        name: "Para despertar",
-        description: "Por la mañana",
-        id: "20",
-        booksInList: [{id:1}]
-    }
+    {name: "Para dormir",description: "Por la noche",id: "10",booksInList: [] },
+    {name: "Para despertar",description: "Por la mañana",id: "20",booksInList: [{id:1}]}
 ]
 
 let genres = ["narrative"];*/
