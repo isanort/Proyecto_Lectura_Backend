@@ -188,3 +188,27 @@ export const modifyToRead = async (bookId) => {
         res.status(500).json({ error: 'Hubo un problema al crear una lista' }); 
     } 
 }
+
+
+// to do: fav, owned
+
+
+
+/////////////////////////////////////
+
+export const getBooksbyGenre = async (booksGenre) => {
+    try { 
+        const book = await booksCollection.find({genre: booksGenre}).toArray();
+        console.log("The book is in server");
+        return book;
+    } 
+    catch (error) { 
+        console.error('Error al obtener un libro:', error);
+        res.status(500).json({ error: 'Hubo un problema al obtener un libro' }); 
+    } 
+};
+
+export const pluck = (arr, ...keys) =>
+    keys.length > 1 ?
+        arr.map(i => keys.map(k => i[k])) :
+        arr.map(i => i[keys[0]]);

@@ -77,6 +77,10 @@ import { getToRead } from './server_functions';
 
 import { modifyToRead } from './server_functions';
 
+import { getBooksbyGenre } from './server_functions';
+
+import { pluck } from './server_functions';
+
 
 // API  
 
@@ -187,7 +191,9 @@ app.patch('/books/:id/owned', (req, res) => {
 });
 
 
-//Get a random book Math.floor ---no funciona
+/////////////////////////////////////
+
+//Get a random book
 app.get('/books/random', async (req, res) => {
     const toReadBooks =  getAllBooks();
     const toReadbooks = toReadBooks.map(book => {
@@ -201,36 +207,22 @@ app.get('/books/random', async (req, res) => {
 });
 
 
-    //Get genre books
+//Get books by genre
 app.get('/books/genres/:genre', async (req, res) => {
-    try { 
         const bookGenre = req.params.genre;
-        const books = await booksCollection.find({genre: bookGenre}).toArray();
+        const books = getBooksbyGenre(bookGenre);
         res.json(books);
-    } 
-    catch (error) { 
-        console.error('Error al obtener los libros de un género:', error);
-        res.status(500).json({ error: 'Hubo un problema al obtener los libros de un género' }); 
-    } 
 }); 
-
 
 //genre list: buscar todos los géneros y mostar el nombre ------
 app.get('/books/allgenres/', (req, res) => {
-    console.log("hola");
-    const listGenres = books.map(book => {
-        const genre = book.genre;
-        console.log(1, genre);
-        return genre
-    });
-    
-    //books.forEach(function(obj){genres.push(obj.genre)})
-    console.log(2, listGenres);
+    const books = getAllBooks();
+    const listGenres = pluck(books, 'genre');
     res.json(listGenres);
 });
 
 
-//Get format books
+//Get books by format
 app.get('/books/format/:format', async (req, res) => {
     try { 
         const bookFormat = req.params.genre;
@@ -243,7 +235,7 @@ app.get('/books/format/:format', async (req, res) => {
     } 
 });
 
-//Get language books
+//Get books by language
 app.get('/books/language/:language', async (req, res) => {
     try { 
         const bookLanguage = req.params.language;
