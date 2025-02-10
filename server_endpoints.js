@@ -52,74 +52,103 @@ let lists = [
 
 let genres = ["narrative"];*/
 
+
+
+import { getBookbyId } from './server_functions';
+
+import { getBooksbyId } from './server_functions';
+
+import { getAllBooks } from './server_functions';
+
+import { getListbyId } from './server_functions';
+
+import { getAllLists } from './server_functions';
+
+import { createBook } from './server_functions';
+
+import { createList } from './server_functions';
+
+import { modifyBook } from './server_functions';
+
+import { modifyList } from './server_functions';
+
+import { getToRead } from './server_functions';
+
+import { modifyToRead } from './server_functions';
+
+
 // API  
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 //Get a book
-app.get('/books/id/:id', async (req, res) => {
-    try { 
+app.get('/books/id/:id', async (req, res) => { 
         const bookId = req.params.id;
-        const book = await db.collection(booksCollection).findOne({id: bookId});
+        const book = getBookbyId(bookId);
         res.json(book);
         console.log("The book is in server");
-    } 
-    catch (error) { 
-        console.error('Error al obtener un libro:', error);
-        res.status(500).json({ error: 'Hubo un problema al obtener un libro' }); 
-    } 
 }); 
 
 //Get all books
 app.get('/books', async (req, res) => {
-    try {
-        const books = await booksCollection.find().toArray();
+        const books = getAllBooks();
         res.json(books);
-    }
-    catch (error) { 
-        console.error('Error al obtener todos los libros:', error);
-        res.status(500).json({ error: 'Hubo un problema al obtener todos los libros' }); 
-    } 
 });
+
+//Create a book
+app.post('/books/', async (req, res) => {
+    const body = req.body;
+    const newBook = await createBook(body);
+    res.json(newBook);
+});
+
+//Modify a book
+app.patch('/books/:id', async (req, res) => {
+    const bookId = req.params.id;
+    const body = req.body;
+    const book = getBookbyId(bookId);
+    const updateBook = await modifyBook(book, body);
+    res.json(updateBook);
+});
+
+//Delete a book
+app.delete('/books/:id', async (req, res) => {
+    const bookId = req.params.id;
+    const book = getBookbyId(bookId);
+    await db.collection(booksCollection).deleteOne(book);
+    res.json(books); //mensaje de confirmación
+});
+
+/////////////////////////////////////
 
 //Get toread books
 app.get('/books/toread', async (req, res) => {
-    try {
-        const toreadBooks = await booksCollection.find({toread: true}).toArray();
+        const toreadBooks = getToRead
         res.json(toreadBooks);
-    }
-    catch (error) { 
-        console.error('Error al obtener los libros para leer:', error);
-        res.status(500).json({ error: 'Hubo un problema al obtener los libros para leer' }); 
-    } 
 });
 
-//Modify toread    ID después de elemento
-/*app.patch('/books/:id/toread', async (req, res) => {
+//Modify toread
+app.patch('/books/:id/toread', (req, res) => {
+        const bookId = req.params.id;
+        const book = getBookbyId(bookId);
+        const newbook = modifyToRead(bookId, book);
+        res.json(newbook);
+}); 
+
+app.patch('/books/:id/toread', (req, res) => {
     try { 
         const bookId = req.params.id;
-        const book = await db.collection(booksCollection).findOne({id: bookId});
-        //modificar toread
-        //updatebook
-        res.json(//updatebook);
-        console.log("The book is updated(toread)"))
+        const book = getBookbyId(bookId);
+        const update_request = {toread: !book.toread}
+        booksCollection.updateOne(book, update_request)
+        res.json(book);
+        console.log("The book is updated(toread)");
     } 
     catch (error) { 
         console.error('Error al obtener un libro:', error);
         res.status(500).json({ error: 'Hubo un problema al obtener un libro' }); 
     } 
 }); 
-*/
-
-
-    const bookId = req.params.id;
-    const book = books.find((book) => book.id == bookId);
-    const toread = !book.toread;
-    let bookUpt = {
-        ...book,
-        toread
-    };
-    books[books.indexOf(book)] = bookUpt;
-    res.status(200).send('OK');
-
 
 //Get fav books
 app.get('/books/fav', async (req, res) => {
@@ -174,9 +203,9 @@ app.patch('/books/:id/owned', (req, res) => {
 
 
 //Get a random book Math.floor ---no funciona
-app.get('/books/random', (req, res) => {
+app.get('/books/random', async (req, res) => {
     //array todos libros
-    const toReadBooks = booksCollection.find({toread: true}).toArray();
+    const toReadBooks = await booksCollection.find({toread: true}).toArray();
     //const toReadBooks = books.filter((book) => book.toread === true);
     //obtener id
     const idtoReadbooks = toReadBooks.map(book => {
@@ -188,83 +217,6 @@ app.get('/books/random', (req, res) => {
     const book = books.find((book) => book.id == bookId);
     res.json(book);
 });
-
-
-//Create a book
-app.post('/books/', (req, res) => {
-    const postBook = req.body;
-    postBook.id = uuidv4();
-    postBook.createdAt = new Date();
-    postBook.updatedAt = new Date();
-    books.push(postBook);
-    res.json(postBook);
-});
-
-//Delete a book
-app.delete('/books/:id', (req, res) => {
-    const bookId = req.params.id;
-    const book = books.find((book) => book.id == bookId);
-    const numb = books.indexOf(book);
-    books.splice(numb, 1);
-    res.json(books); //mensaje de confirmación
-});
-
-
-//Modify a book
-app.patch('/books/:id', (req, res) => {
-    const bookId = req.params.id;
-    const book = books.find((book) => book.id == bookId);
-    const updatedAt = new Date();
-
-    let bookUpt = {
-        ...book,
-        updatedAt
-    };
-
-    if (req.body.title) {
-        const title = req.body.title;
-        bookUpt = {
-            ...bookUpt,
-            title
-        }
-    }
-
-    if (req.body.author) {
-        const author = req.body.author;
-        bookUpt = {
-            ...bookUpt,
-            author
-        }
-    }
-
-    if (req.body.genre) {
-        const genre = req.body.genre;
-        bookUpt = {
-            ...bookUpt,
-            genre
-        }
-    }
-
-    if (req.body.format) {
-        const format = req.body.genre;
-        bookUpt = {
-            ...bookUpt,
-            format
-        }
-    }
-
-    if (req.body.rating) {
-        const rating = req.body.rating;
-        bookUpt = {
-            ...bookUpt,
-            rating
-        }
-    }
-
-    books[books.indexOf(book)] = bookUpt;
-    res.json(bookUpt);
-    console.log("Antes");
-})
 
 //Get genre books
 app.get('/books/genres/:genre', async (req, res) => {
@@ -321,53 +273,44 @@ app.get('/books/language/:language', async (req, res) => {
     } 
 });
 
-//Create a new list
-app.post('/lists', (req, res) => {
-    const newList = req.body;
-    newList.id = uuidv4();
-    lists.push(newList);
-    res.json(newList);
-});
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //Get a list
 app.get('/lists/:id', (req, res) => {
     const listId = req.params.id;
-    const list = lists.find((list) => list.id == listId);
+    const list = getBookbyId(listId);
     res.json(list);
 });
 
-//Modify a list - no funciona
-app.patch('/lists/:id/modify', (req, res) => {
+//Get all lists
+app.get('/lists', async (req, res) => {
+        const lists = getAllLists();
+        res.json(lists);
+});
+
+//Create a new list
+app.post('/lists', async (req, res) => {
+    const body = req.body;
+    const newList = await createList(body);
+    res.json(newList);
+});
+
+//Modify a list
+app.patch('/lists/:id', async (req, res) => {
     const listId = req.params.id;
-    const list = lists.find((list) => list.id == listId);
+    const body = req.body;
+    const list = getListbyId(listId);
+    const updatelist = await modifyList(list, body);
+    res.json(updatelist);
+});
 
-    let listUpt = {
-        ...list
-    };
-
-    if (req.body.name) {
-        const name = req.body.name;
-        listUpt = {
-            ...listUpt,
-            name
-        }
-    }
-
-    if (req.body.description) {
-        const description = req.body.description;
-        listUpt = {
-            ...listUpt,
-            description
-        }
-
-    }
-
-    const listnum = lists.indexOf(list);
-    lists[listnum] = listUpt;
-    console.log(1, listnum);
-    console.log(1, lists);
-    res.json(listUpt);
-})
+//Delete a list
+app.delete('/lists/:id', async (req, res) => {
+    const listId = req.params.id;
+    const list = getListbyId(listId);
+    booksCollection.deleteOne(list);
+    res.json(list); //mensaje de confirmación
+});
 
 //patch para listas del usuario- añadir libro a lista
 //Add books to a list
@@ -392,20 +335,6 @@ app.patch('/lists/:id/addbooks', (req, res) => {
     res.json(list);
 });
 
-
-//Get all lists
-app.get('/lists', (req, res) => {
-    res.json(lists);
-});
-
-//Delete a list
-app.delete('/lists/:id', (req, res) => {
-    const listId = req.params.id;
-    const list = lists.find((list) => list.id == listId);
-    const numb = lists.indexOf(list);
-    lists.splice(numb, 1);
-    res.json(lists); //mensaje de confirmación
-});
 
 
 

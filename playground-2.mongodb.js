@@ -97,7 +97,7 @@ db.myCollection.insertMany([
         "pages": 800,
         "published": 2023,
         "dateread": dates,
-        "customlists": 2,
+        "customlists": [],
     },
     { 
         "id": 106,
