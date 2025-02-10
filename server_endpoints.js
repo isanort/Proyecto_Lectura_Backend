@@ -16,7 +16,8 @@ uuidv4();
 // URL de conexión a MongoDB y nombre de la base de datos
 const mongoUrl = 'mongodb://localhost:27017';
 const dbName = 'MY_BOOKS_DB';
-const booksCollection = 'BOOKS';
+const booksCollection = db.collection('BOOKS');
+const listsCollection = db.collection('LISTS');
 
 // Variable para almacenar la conexión a la base de datos
 let db; 
@@ -106,8 +107,7 @@ app.post('/books/', async (req, res) => {
 app.patch('/books/:id', async (req, res) => {
     const bookId = req.params.id;
     const body = req.body;
-    const book = getBookbyId(bookId);
-    const updateBook = await modifyBook(book, body);
+    const updateBook = await modifyBook(bookId, body);
     res.json(updateBook);
 });
 
@@ -115,7 +115,7 @@ app.patch('/books/:id', async (req, res) => {
 app.delete('/books/:id', async (req, res) => {
     const bookId = req.params.id;
     const book = getBookbyId(bookId);
-    await db.collection(booksCollection).deleteOne(book);
+    await booksCollection.deleteOne(book);
     res.json(books); //mensaje de confirmación
 });
 
@@ -123,7 +123,7 @@ app.delete('/books/:id', async (req, res) => {
 
 //Get toread books
 app.get('/books/toread', async (req, res) => {
-        const toreadBooks = getToRead
+        const toreadBooks = getToRead();
         res.json(toreadBooks);
 });
 
@@ -133,21 +133,6 @@ app.patch('/books/:id/toread', (req, res) => {
         const book = getBookbyId(bookId);
         const newbook = modifyToRead(bookId, book);
         res.json(newbook);
-}); 
-
-app.patch('/books/:id/toread', (req, res) => {
-    try { 
-        const bookId = req.params.id;
-        const book = getBookbyId(bookId);
-        const update_request = {toread: !book.toread}
-        booksCollection.updateOne(book, update_request)
-        res.json(book);
-        console.log("The book is updated(toread)");
-    } 
-    catch (error) { 
-        console.error('Error al obtener un libro:', error);
-        res.status(500).json({ error: 'Hubo un problema al obtener un libro' }); 
-    } 
 }); 
 
 //Get fav books
@@ -204,25 +189,23 @@ app.patch('/books/:id/owned', (req, res) => {
 
 //Get a random book Math.floor ---no funciona
 app.get('/books/random', async (req, res) => {
-    //array todos libros
-    const toReadBooks = await booksCollection.find({toread: true}).toArray();
-    //const toReadBooks = books.filter((book) => book.toread === true);
-    //obtener id
-    const idtoReadbooks = toReadBooks.map(book => {
-        const id = book.id;
+    const toReadBooks =  getAllBooks();
+    const toReadbooks = toReadBooks.map(book => {
+        book.dateread = null;
         return id
     });
     //random
-    const bookId = Math.floor(Math.random()*(idtoReadbooks.length +1));
-    const book = books.find((book) => book.id == bookId);
+    const position = Math.floor(Math.random()*(toReadbooks.length +1));
+    const book = toReadbooks[position];
     res.json(book);
 });
 
-//Get genre books
+
+    //Get genre books
 app.get('/books/genres/:genre', async (req, res) => {
     try { 
         const bookGenre = req.params.genre;
-        const books = await db.collection(booksCollection).find({genre: bookGenre}).toArray();
+        const books = await booksCollection.find({genre: bookGenre}).toArray();
         res.json(books);
     } 
     catch (error) { 
@@ -251,7 +234,7 @@ app.get('/books/allgenres/', (req, res) => {
 app.get('/books/format/:format', async (req, res) => {
     try { 
         const bookFormat = req.params.genre;
-        const books = await db.collection(booksCollection).find({genre: bookFormat}).toArray();
+        const books = await booksCollection.find({genre: bookFormat}).toArray();
         res.json(books);
     } 
     catch (error) { 
@@ -264,7 +247,7 @@ app.get('/books/format/:format', async (req, res) => {
 app.get('/books/language/:language', async (req, res) => {
     try { 
         const bookLanguage = req.params.language;
-        const books = await db.collection(booksCollection).find({language: bookLanguage}).toArray();
+        const books = await booksCollection.find({language: bookLanguage}).toArray();
         res.json(books);
     } 
     catch (error) { 

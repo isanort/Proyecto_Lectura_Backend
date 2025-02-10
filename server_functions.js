@@ -13,9 +13,12 @@ app.use(morgan('tiny'));
 
 uuidv4();
 
+const booksCollection = db.collection('BOOKS');
+const listsCollection = db.collection('LISTS');
+
 export const getBookbyId = async (bookId) => {
     try { 
-        const book = await db.collection(booksCollection).findOne({id: bookId});
+        const book = await booksCollection.findOne({id: bookId});
         console.log("The book is in server");
         return book;
     } 
@@ -27,7 +30,7 @@ export const getBookbyId = async (bookId) => {
 
 export const getBooksbyId = async (booksId) => {
     try { 
-        const book = await db.collection(booksCollection).find({id: booksId});  /////
+        const book = await booksCollection.find({id: booksId});  /////
         console.log("The book is in server");
         return book;
     } 
@@ -39,7 +42,7 @@ export const getBooksbyId = async (booksId) => {
 
 export const getAllBooks = async () => {
     try { 
-        const books = await db.collection(booksCollection).find().toArray();
+        const books = await booksCollection.find().toArray();
         console.log("The books are in server");
         return books;
     } 
@@ -51,7 +54,7 @@ export const getAllBooks = async () => {
 
 export const getListbyId = async (listId) => {
     try { 
-        const list = await db.collection(listsCollection).findOne({id: listId});
+        const list = await listsCollection.findOne({id: listId});
         console.log("The list is in server");
         return list;
     } 
@@ -63,7 +66,7 @@ export const getListbyId = async (listId) => {
 
 export const getAllLists = async () => {
     try { 
-        const lists = await db.collection(listsCollection).find().toArray();
+        const lists = await listsCollection.find().toArray();
         console.log("The lists are in server");
         return lists;
     } 
@@ -116,9 +119,10 @@ export const createList = async (list) => {
     } 
 }
 
-export const modifyBook = async (id, book) => {
+export const modifyBook = async (bookId, book) => {
     try {
         const newBook = {
+            $set: {
             "bookcover": book.bookcover,
             "title": book.title,
             "author": book.author,
@@ -134,8 +138,8 @@ export const modifyBook = async (id, book) => {
             "dateread": book.dateread,
             "customlists": [],
             "updatedAt": new Date(),
-        }
-        return await booksCollection.updateOne(id, newBook);
+        }}
+        return await booksCollection.updateOne({id: bookId}, newBook);
     }
     catch (error) { 
         console.error('Error al crear un libro:', error);
@@ -162,7 +166,7 @@ export const modifyList = async (list) => {
 
 export const getToRead = async () => {
     try { 
-        const books = await db.collection(booksCollection).find({toread: true}).toArray();;
+        const books = await booksCollection.find({toread: true}).toArray();;
         console.log("The book is in server");
         return books;
     } 
@@ -172,12 +176,12 @@ export const getToRead = async () => {
     } 
 };
 
-export const modifyToRead = async (book) => {
+export const modifyToRead = async (bookId) => {
     try {
         const newBook = {
             "toread": !book.toread
         }
-        return await booksCollection.updateOne(book, newBook);    
+        return await booksCollection.updateOne({id: bookId}, newBook);    
     }
     catch (error) { 
         console.error('Error al crear una lista:', error);
