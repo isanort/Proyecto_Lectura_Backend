@@ -1,19 +1,19 @@
 // MongoDB Playground
 // Use Ctrl+Space inside a snippet or a string literal to trigger completions.
-import {v4 as uuidv4} from 'uuid';
-uuidv4();
 
 // The current database to use.
 const booksDataBase = "MY_BOOKS_DB";
 use(booksDataBase);
-const myCollection = "BOOKS";
+
+/*db.createCollection("LISTS");*/
+
 
 // Find a document in a collection.
 //db.getCollection("BOOKS").findOne({});
 const  dateRead = new Date();
 const dates = (dateRead.getDay, dateRead.getMonth, dateRead.getFullYear);
 
-db.myCollection.insertMany([
+/*db.getCollection("BOOKS").insertMany([
     {
         "id": 101,
         "bookcover": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTZyEUScaTnehxsV6AZzsPhtro2xxn6QCwlA5J700ws1Mccylkw",
@@ -215,7 +215,7 @@ db.myCollection.insertMany([
         "summary": "The second volume is packed with intriguing developments, as Schulz continues to create his tender and comic universe. It begins with Peanuts' third full year and a cast of eight: Charlie Brown, Shermy, Patty, Violet, Schroeder, Lucy, the recently-born Linus, and Snoopy. By the end of 1954, Pigpen and his dust cloud join the crowd. Linus, who still doesn't speak, begins to emerge as one of the most complex and endearing characters in the strip: garrulous and inquisitive yet gentle and tolerant. And, in this volume, he acquires his security blanket! Charlie Brown is becoming his best-known self, the lovable, perpetually-humiliated round-headed loser, but he hasn't yet abandoned his brasher, prankish behavior from Volume One. And, Lucy, this book's cover girl, has grown up and forcefully elbowed her way to the center of the action, proudly wearing her banner as a troublemaker, or, in Schulz's memorable phrase, a fussbudget. For readers unfamiliar with the early years of the strip, Snoopy's appearances here may come as the biggest surprise: he behaves, for the most part, like a dog! But, although he doesn't yet walk upright, sleep on top of his doghouse, or possess a fantasy life, Snoopy has started thinking for himself and his evolution continues its fascinating course within these pages. If you watch carefully, you'll catch his very first shark impression. The vast majority of the daily and Sunday strips collected here are not currently available in any in-print Peanuts collection. Dozens of them have not been reprinted since their initial appearance in newspapers over 50 years ago.",
         "pages": 339,
         "published": 2004,
-        "dateread": dat,
+        "dateread": dates,
         "customlists": [],
     },
     {
@@ -232,7 +232,7 @@ db.myCollection.insertMany([
         "summary": "In early nineteenth-century England, a spirited young woman copes with the suit of a snobbish gentleman, as well as the romantic entanglements of her four sisters",
         "pages": 401,
         "published": 1918,
-        "dateread": dat,
+        "dateread": dates,
         "customlists": [],
     },
     {
@@ -249,7 +249,7 @@ db.myCollection.insertMany([
         "summary": "The third volume in our acclaimed series takes us into the mid-1950s as Linus learns to talk, Snoopy begins to explore his eccentricities (including his hilarious first series of impressions), Lucy's unrequited crush on Schroeder takes final shape, and Charlie Brown becomes...well, even more Charlie Brown-ish! Over half of the strips in this volume have never been printed since their original appearance in newspapers a half-century ago! Even the most dedicated Peanuts collector/fan is sure to find many new treasures. The Complete Peanuts will run 25 volumes, collecting two years chronologically at a rate of two a year for twelve years. Each volume is designed by the award-winning cartoonist Seth (It's a Good Life If You Don't Weaken) and features impeccable production values; every single strip from Charles M. Schulz's 50-year American classic is reproduced better than ever before. This volume includes an introduction by Matt Groening (The Simpsons) as well as the popular Complete Peanuts index, a hit with librarians and collectors alike, and an epilogue by series editor Gary Groth. 2005 Eisner Award winner, Best Archival Collection/Project.",
         "pages": 339,
         "published": 2005,
-        "dateread": dat,
+        "dateread": dates,
         "customlists": [],
     },   
     {
@@ -266,7 +266,7 @@ db.myCollection.insertMany([
         "summary": "As the 1950s close down, Peanuts definitively enters its golden age. Linus, who had just learned to speak in the previous volume, becomes downright eloquent and even begins to fend off Lucy's bullying; even so, his security neurosis becomes more pronounced, including a harrowing two-week 'Lost Weekend' sequence of blanketlessness. Charlie Brown cascades further down the hill to loserdom, with spectacularly lost kites, humiliating baseball losses (including one where he becomes 'the Goat' and is driven from the field in a chorus of BAAAAHs); at least his newly acquired 'pencil pal' affords him some comfort. Pig-Pen, Shermy, Violet, and Patty are also around, as is an increasingly Beethoven-fixated Schroeder. But the rising star is undoubtedly Snoopy. He's at the center of the most graphically dynamic and action-packed episodes (the ones in which he attempts to grab Linus's blanket at a dead run). He even tentatively tries to sleep on the crest of his doghouse roof once or twice, with mixed results. And his imitations continue apace, including penguins, anteaters, sea monsters, vultures and (much to her chagrin) Lucy. No wonder the beagle is the cover star of this volume.",
         "pages": 338,
         "published": 2005,
-        "dateread": dat,
+        "dateread": dates,
         "customlists": [],
     },
     {
@@ -280,10 +280,10 @@ db.myCollection.insertMany([
         "toread": false,
         "fav": false,
         "owned": false,
-        "summary": "As the first decade of Peanuts closes, it seems only fitting to bid farewell to that halcyon decade with a cover starring Patty, one of the original three Peanuts. Major new additions to classic Peanuts lore come fast and furious here. Snoopy begins to take up residence atop his doghouse, and his repertoire of impressions increases exponentially. Lucy sets up her booth and offers her first five-cent psychiatric counsel. (Her advice to a forlorn Charlie Brown: 'Get over it.') For the very first time, Linus spends all night in the pumpkin patch on his lonely vigil for the Great Pumpkin (although he laments that he was a victim of 'false doctrine, 'he's back 12 months later). Linus also gets into repeated, and visually explosive, scuffles with a blanket-stealing Snoopy, suffers the first depredations of his blanket-hating grandmother, and falls in love with his new teacher Miss Othmar. Even more importantly, several years after the last addition to the cast ('Pig-Pen'), Charlie Brown's sister Sally makes her appearance―first as an (off-panel) brand new baby for Charlie to gush over, then as a toddler and eventually a real, talking, thinking cast member. (By the end of this volume, she'll already start developing her crush on Linus.) All this, and one of the most famous Peanuts strips ever: "Happiness is a warm puppy." Almost one hundred of the 731 strips collected in this volume (including many Sundays) have never been collected in any book since their original release, with one hundred more having been collected only once in relatively obscure and now impossible-to-find books; in other words, close to one quarter of the strips have never been seen by anyone but the most avid Peanuts completists.",
+        "summary": "As the first decade of Peanuts closes, it seems only fitting to bid farewell to that halcyon decade with a cover starring Patty, one of the original three Peanuts. Major new additions to classic Peanuts lore come fast and furious here. Snoopy begins to take up residence atop his doghouse, and his repertoire of impressions increases exponentially. Lucy sets up her booth and offers her first five-cent psychiatric counsel. (Her advice to a forlorn Charlie Brown: 'Get over it.') For the very first time, Linus spends all night in the pumpkin patch on his lonely vigil for the Great Pumpkin (although he laments that he was a victim of 'false doctrine, 'he's back 12 months later). Linus also gets into repeated, and visually explosive, scuffles with a blanket-stealing Snoopy, suffers the first depredations of his blanket-hating grandmother, and falls in love with his new teacher Miss Othmar. Even more importantly, several years after the last addition to the cast ('Pig-Pen'), Charlie Brown's sister Sally makes her appearance―first as an (off-panel) brand new baby for Charlie to gush over, then as a toddler and eventually a real, talking, thinking cast member. (By the end of this volume, she'll already start developing her crush on Linus.) All this, and one of the most famous Peanuts strips ever: 'Happiness is a warm puppy.' Almost one hundred of the 731 strips collected in this volume (including many Sundays) have never been collected in any book since their original release, with one hundred more having been collected only once in relatively obscure and now impossible-to-find books; in other words, close to one quarter of the strips have never been seen by anyone but the most avid Peanuts completists.",
         "pages": 339,
         "published": 2006,
-        "dateread": dat,
+        "dateread": dates,
         "customlists": [],
     },
     {
@@ -297,10 +297,10 @@ db.myCollection.insertMany([
         "toread": false,
         "fav": false,
         "owned": false,
-        "summary": "Launching into the 1960s, Schulz adds another new cast member. Two, in fact: The obnoxious Frieda of "naturally curly hair" fame, and her inert, seemingly boneless cat Faron. The rapidly maturing Sally, who was after all just born in the previous volume, is ready to start kindergarten and not at all happy about it. Lucy and Linus' war over the security blanket escalates, with Lucy burying it, cutting it apart, and, in the longest sequence of the book, turning it into a kite and allowing it to fly away. Aauugh! In fact, Linus' life is particularly turbulent in this volume, as he is forced to wear glasses, sees the unexpected return of his favorite teacher, Miss Othmar, and coaxes Sally into the cult of the Great Pumpkin (with regrettable results).",
+        "summary": "Launching into the 1960s, Schulz adds another new cast member. Two, in fact: The obnoxious Frieda of 'naturally curly hair' fame, and her inert, seemingly boneless cat Faron. The rapidly maturing Sally, who was after all just born in the previous volume, is ready to start kindergarten and not at all happy about it. Lucy and Linus' war over the security blanket escalates, with Lucy burying it, cutting it apart, and, in the longest sequence of the book, turning it into a kite and allowing it to fly away. Aauugh! In fact, Linus' life is particularly turbulent in this volume, as he is forced to wear glasses, sees the unexpected return of his favorite teacher, Miss Othmar, and coaxes Sally into the cult of the Great Pumpkin (with regrettable results).",
         "pages": 340,
         "published": 2006,
-        "dateread": dat,
+        "dateread": dates,
         "customlists": [],
     },
     {
@@ -314,21 +314,16 @@ db.myCollection.insertMany([
         "toread": false,
         "fav": false,
         "owned": false,
-        "summary": "My name is 555 95472 but everyone calls me 5 for short... I have two sisters named 3 and 4." With those words, Charles Schulz introduced one (in fact, three) of the quirkiest characters to the Peanutsuniverse, the numerically-monikered 95472 siblings. They didn't stay around very long but offered some choice bits of satirical nonsense while they did. As it happens, this volume is particularly rich in never-before-reprinted strips: Over 150 (more than one fifth of the book!) have never seen the light of day since their original appearance over 40 years ago, so this will be a trove of undiscovered treasures even for avid Peanuts collectors. These "lost" strips include Linus making a near-successful run for class president that is ultimately derailed by his religious beliefs (two words: "great" and "pumpkin"), and Snoopy getting involved with a group of politically fanatical birds. Also in this volume: Lucy's attempts at improving her friends branches out from her increasingly well-visited nickel psychiatry booth to an educational slideshow of Charlie Brown's faults (it's so long there's an intermission!). Also, Snoopy's doghouse begins its conceptual expansion, as Schulz reveals that the dog owns a Van Gogh, and that the ceiling is so huge that Linus can paint a vast (and as it turns out unappreciated) "history of civilization" mural on it.",
+        "summary": "My name is 555 95472 but everyone calls me 5 for short... I have two sisters named 3 and 4.' With those words, Charles Schulz introduced one (in fact, three) of the quirkiest characters to the Peanutsuniverse, the numerically-monikered 95472 siblings. They didn't stay around very long but offered some choice bits of satirical nonsense while they did. As it happens, this volume is particularly rich in never-before-reprinted strips: Over 150 (more than one fifth of the book!) have never seen the light of day since their original appearance over 40 years ago, so this will be a trove of undiscovered treasures even for avid Peanuts collectors. These 'lost' strips include Linus making a near-successful run for class president that is ultimately derailed by his religious beliefs (two words: 'great' and 'pumpkin'), and Snoopy getting involved with a group of politically fanatical birds. Also in this volume: Lucy's attempts at improving her friends branches out from her increasingly well-visited nickel psychiatry booth to an educational slideshow of Charlie Brown's faults (it's so long there's an intermission!). Also, Snoopy's doghouse begins its conceptual expansion, as Schulz reveals that the dog owns a Van Gogh, and that the ceiling is so huge that Linus can paint a vast (and as it turns out unappreciated) 'history of civilization' mural on it.",
         "pages": 333,
         "published": 2007,
-        "dateread": dat,
+        "dateread": dates,
         "customlists": [],
-    },
+    }]);
 
-let lists = [
+db.getCollection("LISTS"). insertMany([
     {name: "Para dormir",description: "Por la noche",id: "10",booksInList: [] },
-    {name: "Para despertar",description: "Por la mañana",id: "20",booksInList: [{id:1}]}
-]
+    {name: "Para despertar",description: "Por la mañana",id: "20",booksInList: [{id:101}]}
+]);*/
 
-
-]);
-db.myCollection.
-
-
-db.getCollection(myCollection).find();
+db.getMongo().getDBNames();
