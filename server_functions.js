@@ -33,17 +33,10 @@ MongoClient.connect(mongoUrl, {useNewUrlParser: true, useUnifiedTopology: true})
 
 
 export const getBookbyId = async (bookId) => {
-    try { 
-        const options = { 
-            sort: {"title": -1},
-            projection: {_id: 0, id: 1, title: 1, author: 1 }
-        }
-        const filter = {id: bookId};
-        const book = await booksCollection.findOne(filter, options);
+    try {
+        const filter = {id: parseInt(bookId)};  //////num o string
+        const book = await booksCollection.findOne(filter);
         console.log("The book is in the server");
-        console.log(book);
-        console.log(bookId);
-        console.log(book);
         return book;
     } 
     catch (error) { 
@@ -51,14 +44,6 @@ export const getBookbyId = async (bookId) => {
         res.status(500).json({ error: 'Hubo un problema al obtener un libro' }); 
     } 
 };
-
-export const getBooksbyId = async (booksId) => {
-new Promise((resolve, reject) => {
-        const book = booksCollection.find({id: booksId}) 
-        console.log("The book is in server")
-    .then (book=> resolve (book))
-    .catch(errorFind => reject(errorFind));
-});}
 
 export const deleteBookbyId = async (bookId) => {
     try {         ///projection not working
@@ -86,8 +71,7 @@ export const deleteListbyId = async (listId) => {
 
 export const getAllBooks = async () => {
     try { 
-        const options = { sort: {"title": -1},projection: {title: 1, author: 1, id:1, _id:0, toread: 1 }};
-        const books = await booksCollection.find({}, options).toArray();
+        const books = await booksCollection.find({}).toArray();
         console.log("The books are in servers");
         return books;
     } 
@@ -98,10 +82,8 @@ export const getAllBooks = async () => {
 };
 
 export const getListbyId = async (listId) => {
-    try { 
-        const projection = { name: 1, description: 1 };         ///projection not working
-        const list = await listsCollection.findOne({id: listId}, projection);
-        console.log("The list is in server");
+    try {          ///projection not working
+        const list = await listsCollection.findOne({id: listId});
         return list;
     } 
     catch (error) { 
@@ -134,14 +116,10 @@ export const createBook = async (book) => {
             "genre": book.genre,
             "format": book.format,
             "language": book.language,
-            "toread": book.toread,
-            "fav": book.fav,
-            "owned": book.owned,
             "summary": book.summary,
             "pages": book.pages,
             "published": book.published,
             "dateread": book.dateread,
-            "customlists": [],
             "createdAt": new Date(),
             "updatedAt": new Date(),
         }
@@ -159,6 +137,7 @@ export const createList = async (list) => {
             "id": uuidv4(),
             "name": list.name,
             "description": list.description,
+            "booksInList": []
         }
         return await listsCollection.insertOne(newList);
     }
@@ -168,9 +147,9 @@ export const createList = async (list) => {
     } 
 }
 
-export const modifyBook = async (bookId, book) => {
+export const modifyBook = async (bookId, book) => { ///a mitad
     try {
-        const newBook = {
+        book = {
             $set: {
             "bookcover": book.bookcover,
             "title": book.title,
@@ -178,17 +157,13 @@ export const modifyBook = async (bookId, book) => {
             "genre": book.genre,
             "format": book.format,
             "language": book.language,
-            "toread": book.toread,
-            "fav": book.fav,
-            "owned": book.owned,
             "summary": book.summary,
             "pages": book.pages,
             "published": book.published,
             "dateread": book.dateread,
-            "customlists": [],
             "updatedAt": new Date(),
         }}
-        return await booksCollection.updateOne({id: bookId}, newBook);
+        return await booksCollection.updateOne({id: bookId}, book);
     }
     catch (error) { 
         console.error('Error al crear un libro:', error);
@@ -196,24 +171,13 @@ export const modifyBook = async (bookId, book) => {
     } 
 }
 
-export const modifyKey = async (bookId, book, bookKey) => {
+export const modifyList = async (listId, list) => {
     try {
-        const key = bookKey;
-    return await booksCollection.updateOne({id: bookId}, {$set: {key: book.key}});
-    }
-    catch (error) { 
-        console.error('Error al crear un libro:', error);
-        res.status(500).json({ error: 'Hubo un problema al crear un libro' }); 
-    }
-}
-
-export const modifyList = async (list) => {
-    try {
-        const newList = {
+        list = { $set: {
             "name": list.name,
             "description": list.description,
-        }
-        return await listsCollection.updateOne(id, newList);
+        }}
+        return await listsCollection.updateOne({id: listId}, list);
     }
     catch (error) { 
         console.error('Error al crear una lista:', error);
@@ -228,7 +192,6 @@ export const getToRead = async () => {
     try { 
         const toReadbooks = await booksCollection.find({toread: true}).toArray();;
         console.log("The book is in server");
-        console.log(toReadbooks);
         return toReadbooks;
         
     } 
@@ -238,30 +201,35 @@ export const getToRead = async () => {
     } 
 };
 
-export const modifyToRead = async (bookId) => {
-    try {
-        const projection = { title: 1, toread: 1 };
-        const book = await booksCollection.findOne({id: bookId}, projection);
-        console.log("this way");
-        console.log(book);
-        book = {
-            $set: {
-                toread: {$not: book.toread}
-        }};
-        console.log(book);
-        console.log(bookId);
-        return await booksCollection.updateOne({id: bookId}, book);    
-    }
-    catch (error) { 
-        console.error('Error al crear una lista:', error);
-        res.status(500).json({ error: 'Hubo un problema al crear una lista' }); 
+export const getFav = async () => {
+    try { 
+        const favbooks = await booksCollection.find({fav: true}).toArray();;
+        console.log("The book is in server");
+        return favbooks;
+        
     } 
-}
+    catch (error) { 
+        console.error('Error al obtener un libro:', error);
+        res.status(500).json({ error: 'Hubo un problema al obtener un libro' }); 
+    } 
+};
+
+export const getOwned = async () => {
+    try { 
+        const ownedbooks = await booksCollection.find({owned: true}).toArray();;
+        console.log("The book is in server");
+        return ownedbooks;
+        
+    } 
+    catch (error) { 
+        console.error('Error al obtener un libro:', error);
+        res.status(500).json({ error: 'Hubo un problema al obtener un libro' }); 
+    } 
+};
+
 
 
 // to do: fav, owned
-
-
 
 /////////////////////////////////////
 
@@ -310,3 +278,138 @@ export const pluck = (arr, ...keys) =>
     keys.length > 1 ?
         arr.map(i => keys.map(k => i[k])) :
         arr.map(i => i[keys[0]]);
+
+
+/////////////////////////////////////
+
+
+
+export const addListToBooks = async (listId, bookId) => {
+    try {
+        console.log("Añadiendo lista a al libro:", bookId);
+        // Convertir `bookId` a ObjectId si es necesario
+        const filter = { id: parseInt(bookId) };
+        const filters = { id: listId };
+        // Obtener el libro actual
+        const book = await getBookbyId(bookId);
+        if (!book) {
+            console.log("Libro no encontrado");
+            return { error: "Libro no encontrado" };
+        }
+
+        const list = await getListbyId(listId);
+        console.log('liist', list)
+        if (!list) {
+            console.log("Lista no encontrado");
+            return { error: "Lista no encontrado" };
+        }
+        //Añadir el libro a la lista
+        // Añadir la lista al libro
+
+        const updatedValue = {
+            $each: [{id: listId}]
+                }
+        const updatedValue2 = {
+                    $each: [{id: bookId}]
+                        }
+
+        const updateBook = await booksCollection.updateOne(filter, { $push: { customlists: updatedValue } });
+        const updateList = await listsCollection.updateOne(filters, { $push: { booksInList: updatedValue2 } });
+        console.log("Resultado de actualización:", updateBook);
+
+        return updateBook && updateList;
+        }
+        catch (error) { 
+            console.error('Error al crear una lista:', error);
+            res.status(500).json({ error: 'Hubo un problema al crear una lista' }); 
+        }
+}
+
+
+
+export const modifyToRead = async (bookId) => {
+    try {
+        console.log("Modificando 'toread' del libro:", bookId);
+        // Convertir `bookId` a ObjectId si es necesario
+        const filter = { id: parseInt(bookId) };
+        // Obtener el libro actual
+        const book = await getBookbyId(bookId);
+        if (!book) {
+            console.log("Libro no encontrado");
+            return { error: "Libro no encontrado" };
+        }
+        // Invertir el valor actual de `toread`
+        const updatedValue = !book.toread;
+        // Realizar la actualización
+        const updateResult = await booksCollection.updateOne(filter, { $set: { toread: updatedValue } });
+        console.log("Resultado de actualización:", updateResult);
+        return updateResult;
+    } catch (error) {
+        console.error('Error al modificar "toread":', error);
+        return { error: "Hubo un problema al modificar 'toread'" };
+    }
+};
+
+
+export const modifyFav = async (bookId) => {
+    try {
+        console.log("Modificando 'fav' del libro:", bookId);
+        // Convertir `bookId` a ObjectId si es necesario
+        const filter = { id: parseInt(bookId) };
+        // Obtener el libro actual
+        const book = await getBookbyId(bookId);
+        if (!book) {
+            console.log("Libro no encontrado");
+            return { error: "Libro no encontrado" };
+        }
+        // Invertir el valor actual de `fav`
+        const updatedValue = !book.fav;
+        // Realizar la actualización
+        const updateResult = await booksCollection.updateOne(filter, { $set: { fav: updatedValue } });
+        console.log("Resultado de actualización:", updateResult);
+        return updateResult;
+    } catch (error) {
+        console.error('Error al modificar "fav":', error);
+        return { error: "Hubo un problema al modificar 'fav'" };
+    }
+};
+
+export const modifyOwned = async (bookId) => {
+    try {
+        console.log("Modificando 'owned' del libro:", bookId);
+        // Convertir `bookId` a ObjectId si es necesario
+        const filter = { id: parseInt(bookId) };
+        // Obtener el libro actual
+        const book = await getBookbyId(bookId);
+        if (!book) {
+            console.log("Libro no encontrado");
+            return { error: "Libro no encontrado" };
+        }
+        // Invertir el valor actual de `owned`
+        const updatedValue = !book.owned;
+        // Realizar la actualización
+        const updateResult = await booksCollection.updateOne(filter, { $set: { owned: updatedValue } });
+        console.log("Resultado de actualización:", updateResult);
+        return updateResult;
+    } catch (error) {
+        console.error('Error al modificar "owned":', error);
+        return { error: "Hubo un problema al modificar 'owned'" };
+    }
+};
+
+// Endpoint para actualizar `toread` app.patch('/books/:id/toread', async (req, res) => { try { const bookId = req.params.id; console.log("Petición PATCH recibida para modificar 'toread' de:", bookId); const result = awaitmodifyToRead(bookId); if (result.error) { return res.status(404).json({ error: result.error }); } res.json({ message: "Estado 'toread' actualizado correctamente" }); } catch (error) { console.error("Error en la petición PATCH:", error); res.status(500).json({ error: "Error interno del servidor" }); } });
+
+app.patch('/books/:id/toread', async (req, res) => {
+    try {
+        const bookId = req.params.id;
+        console.log("Petición PATCH recibida para modificar 'toread' de:", bookId);
+        const result = await modifyToRead(bookId);
+        if (result.error) {
+            return res.status(404).json({ error: result.error });
+        }
+        res.json({ message: "Estado 'toread' actualizado correctamente" });
+    } catch (error) {
+        console.error("Error en la petición PATCH:", error);
+        res.status(500).json({ error: "Error interno del servidor" });
+    }
+});

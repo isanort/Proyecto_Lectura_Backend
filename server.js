@@ -54,36 +54,33 @@ let genres = ["narrative"];*/
 
 
 import { getBookbyId } from './server_functions.js';
-
-import { getBooksbyId } from './server_functions.js';
-
 import { getAllBooks } from './server_functions.js';
 
 import { getListbyId } from './server_functions.js';
-
 import { getAllLists } from './server_functions.js';
 
 import { createBook } from './server_functions.js';
-
 import { createList } from './server_functions.js';
 
 import { modifyBook } from './server_functions.js';
-
 import { modifyList } from './server_functions.js';
 
 import { deleteBookbyId } from './server_functions.js';
-
 import { deleteListbyId } from './server_functions.js';
 
 import { getToRead } from './server_functions.js';
+import { getFav } from './server_functions.js';
+import { getOwned } from './server_functions.js';
 
 import { modifyToRead } from './server_functions.js';
+import { modifyFav } from './server_functions.js';
+import { modifyOwned } from './server_functions.js';
 
 import { getBooksbyGenre } from './server_functions.js';
-
 import { getBooksbyFormat } from './server_functions.js';
-
 import { getBooksbyLanguage } from './server_functions.js';
+
+import { addListToBooks } from './server_functions.js';
 
 import { pluck } from './server_functions.js';
 
@@ -92,7 +89,7 @@ import { pluck } from './server_functions.js';
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//Get a book
+//Get a book- working
 app.get('/books/id/:id', async (req, res) => { 
         const bookId = req.params.id;
         console.log(bookId);
@@ -112,24 +109,19 @@ app.get('/books', async (req, res) => {
 });
 
 //Create a book- working
-app.post('/books/', async (req, res) => {
+app.post('/books', async (req, res) => {
     const body = req.body;
     const newBook = await createBook(body);
     res.json(newBook);
 });
 
-//Modify a book
+//Modify a book ///////check
 app.patch('/books/:id', async (req, res) => {
     const bookId = req.params.id;
     const body = req.body;
     const updateBook = await modifyBook(bookId, body);
     res.json(updateBook);
 });
-
-app.patch('/books/:id', async (req, res) => {
-    const bookId = req.params.id;
-    const body = req.body;
-})
 
 //Delete a book- working
 app.delete('/books/delete/:id', async (req, res) => {
@@ -146,66 +138,69 @@ app.get('/books/toread', async (req, res) => {
         res.json(toreadBooks);
 });
 
-//Modify toread
-app.patch('/books/toread/:id', async (req, res) => {
-        const bookId = req.params.id;
-        console.log(bookId);
-        //const newbook = await modifyToRead(bookId);
-        const book = await getBookbyId(bookId);
-        console.log(book);
-        res.json(book);
-}); 
-
 //Get fav books
 app.get('/books/fav', async (req, res) => {
-    try {
-        const favBooks = await booksCollection.find({fav: true}).toArray();
-        res.json(favBooks);
-    }
-    catch (error) { 
-        console.error('Error al obtener los libros favoritos:', error);
-        res.status(500).json({ error: 'Hubo un problema al obtener los libros favoritos' }); 
-    } 
-});
-
-
-//Modify fav
-app.patch('/books/:id/fav', (req, res) => {
-    const bookId = req.params.id;
-    const book = books.find((book) => book.id == bookId);
-    const fav = !book.fav;
-    let bookUpt = {
-        ...book,
-        fav
-    };
-    books[books.indexOf(book)] = bookUpt;
-    res.status(200).send('OK');
+    const favBooks = await getFav();
+    res.json(favBooks);
 });
 
 //Get owned books
 app.get('/books/owned', async (req, res) => {
-    try {
-        const ownedBooks = await booksCollection.find({owned: true}).toArray();
-        res.json(ownedBooks);
-    }
-    catch (error) { 
-        console.error('Error al obtener los libros que tienes:', error);
-        res.status(500).json({ error: 'Hubo un problema al obtener los libros que tienes' }); 
-    } 
+    const ownedBooks = await getOwned();
+    res.json(ownedBooks)
 });
 
-//Modify owned
-app.patch('/books/:id/owned', (req, res) => {
-    const bookId = req.params.id;
-    const book = books.find((book) => book.id == bookId);
-    const owned = !book.owned;
-    let bookUpt = {
-        ...book,
-        owned
-    };
-    books[books.indexOf(book)] = bookUpt;
-    res.status(200).send('OK');
+
+//Modify to read- working
+app.patch('/books/:id/toread', async (req, res) => {
+    try {
+        const bookId = req.params.id;
+        console.log("Petición PATCH recibida para modificar 'toread' de:", bookId);
+        const result = await modifyToRead(bookId);
+        if (result.error) {
+            return res.status(404).json({ error: result.error });
+        }
+        res.json({ message: "Estado 'toread' actualizado correctamente" });
+    } catch (error) {
+        console.error("Error en la petición PATCH:", error);
+        res.status(500).json({ error: "Error interno del servidor" });
+    }
 });
+
+//Modify fav
+app.patch('/books/:id/fav', async (req, res) => {
+    try {
+        const bookId = req.params.id;
+        console.log("Petición PATCH recibida para modificar 'fav' de:", bookId);
+        const result = await modifyFav(bookId);
+        if (result.error) {
+            return res.status(404).json({ error: result.error });
+        }
+        res.json({ message: "Estado 'fav' actualizado correctamente" });
+    } catch (error) {
+        console.error("Error en la petición PATCH:", error);
+        res.status(500).json({ error: "Error interno del servidor" });
+    }
+});
+
+
+
+//Modify owned
+app.patch('/books/:id/owned', async (req, res) => {
+    try {
+        const bookId = req.params.id;
+        console.log("Petición PATCH recibida para modificar 'owned' de:", bookId);
+        const result = await modifyOwned(bookId);
+        if (result.error) {
+            return res.status(404).json({ error: result.error });
+        }
+        res.json({ message: "Estado 'owned' actualizado correctamente" });
+    } catch (error) {
+        console.error("Error en la petición PATCH:", error);
+        res.status(500).json({ error: "Error interno del servidor" });
+    }
+});
+
 
 
 /////////////////////////////////////
@@ -237,13 +232,6 @@ app.get('/books/genres/:genre', async (req, res) => {
         res.json(books);
 }); 
 
-//genre list: buscar todos los géneros y mostar el nombre ------
-app.get('/books/allgenres/', (req, res) => {
-    const books = getAllBooks();
-    const listGenres = pluck(books, 'genre');
-    res.json(listGenres);
-});
-
 
 //Get books by format- working
 app.get('/books/format/:format', async (req, res) => {
@@ -261,7 +249,7 @@ app.get('/books/language/:language', async (req, res) => {
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//Get a list
+//Get a list- working
 app.get('/lists/:id', async (req, res) => {
     const listId = req.params.id;
     const list = await getListbyId(listId);
@@ -269,7 +257,7 @@ app.get('/lists/:id', async (req, res) => {
     console.log("The list is out");
 });
 
-//Get all lists
+//Get all lists- working
 app.get('/lists', async (req, res) => {
         const lists = await getAllLists();
         res.json(lists);
@@ -282,12 +270,11 @@ app.post('/lists', async (req, res) => {
     res.json(newList);
 });
 
-//Modify a list
+//Modify a list- working
 app.patch('/lists/:id', async (req, res) => {
     const listId = req.params.id;
     const body = req.body;
-    const list = getListbyId(listId);
-    const updatelist = await modifyList(list, body);
+    const updatelist = await modifyList(listId, body);
     res.json(updatelist);
 });
 
@@ -298,30 +285,21 @@ app.delete('/lists/delete/:id', async (req, res) => {
     res.json(lists); //mensaje de confirmación
 });
 
-//patch para listas del usuario- añadir libro a lista
-//Add books to a list
-app.patch('/lists/:id/addbooks', (req, res) => {
-    const listId = req.params.id;
-    const list = lists.find((list) => list.id == listId);
 
-
-    if (req.body) {
-        const idBooks = req.body;
-        idBooks.forEach((bookId) => { 
-            const book = books.find((book) => book.id == bookId);
-            list.booksInList.push(book);
-            book.lists.push(listId);
-        })
-
-    };
-        //newBooks.forEach((book) => { list.booksInList.push(book);
-        //const booksInList = newBooks.forEach((book) => {list.booksInList.push(book)
-
-
-    res.json(list);
+//Add list to book, book to list
+app.patch('/books/:id/addlist', async (req, res) => {
+    const bookId = req.params.id;
+    console.log(bookId);
+    const book = await getBookbyId(bookId);
+    const body = req.body;
+    console.log(body);
+    const listId = body.id;
+    console.log(listId);
+    const list = await getListbyId(listId);
+    const updatebook = await addListToBooks(listId, bookId);
+    console.log(updatebook);
+    res.json(updatebook);
 });
-
-
 
 
 app.listen(3000, () => {
