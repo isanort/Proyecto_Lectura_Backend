@@ -1005,8 +1005,6 @@ db.getCollection("BOOKS").insertMany([
                     }
                     ]
     },
-
-
     {
         "id": "152",
         "bookcover": "https://m.media-amazon.com/images/I/91rrdOEQN8L.jpg",
@@ -1349,7 +1347,7 @@ db.getCollection("BOOKS").insertMany([
         "toread": true,
         "fav": false,
         "owned": false,
-        "summary": "It is the story of four seekers who arrive at a notoriously unfriendly pile called Hill House: Dr. Montague, an occult scholar looking for solid evidence of a "haunting"; Theodora, the lighthearted assistant; Eleanor, a friendless, fragile young woman well acquainted with poltergeists; and Luke, the future heir of Hill House. At first, their stay seems destined to be merely a spooky encounter with inexplicable phenomena. But Hill House is gathering its powers—and soon it will choose one of them to make its own.",
+        "summary": "It is the story of four seekers who arrive at a notoriously unfriendly pile called Hill House: Dr. Montague, an occult scholar looking for solid evidence of a 'haunting'; Theodora, the lighthearted assistant; Eleanor, a friendless, fragile young woman well acquainted with poltergeists; and Luke, the future heir of Hill House. At first, their stay seems destined to be merely a spooky encounter with inexplicable phenomena. But Hill House is gathering its powers—and soon it will choose one of them to make its own.",
         "pages": 182,
         "published": 1959,
         "dateread": "",
@@ -1415,7 +1413,7 @@ db.getCollection("BOOKS").insertMany([
 
 
 
-    
+
 
 
 
