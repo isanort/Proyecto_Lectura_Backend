@@ -15,8 +15,7 @@ uuidv4();
 // URL de conexión a MongoDB y nombre de la base de datos
 const mongoUrl = 'mongodb://localhost:27017';
 const dbName = 'MY_BOOKS_DB';
-//const booksCollection = collection('BOOKS');
-//const listsCollection = collection('LISTS');
+
 
 // Variable para almacenar la conexión a la base de datos
 let db; 
@@ -28,7 +27,8 @@ let db;
 MongoClient.connect(mongoUrl, {useNewUrlParser: true, useUnifiedTopology: true})
     .then(client => {
         console.log('Conectado a MongoDB');
-        db = client.db(dbName); // Asignar la base de datos
+        db = client.db(dbName); 
+        // Asignar la base de datos
         //app.listen(5000, () => {
             //console.log('server is running on port 5000');
             //});
@@ -84,6 +84,8 @@ import { addListToBooks } from './server_functions.js';
 
 import { pluck } from './server_functions.js';
 
+import { filterBooks } from './server_functions.js';
+
 
 // API  
 
@@ -103,9 +105,23 @@ app.get('/books/id/:id', async (req, res) => {
 //Get all books- working
 app.get('/books', async (req, res) => {
         console.log("get all books");
-        const allbooks = await getAllBooks();
+
         console.log("get all books");
+        //Parámetros
+    const { genre, language, format } = req.query; // Capturamos los parámetros de la URL
+    const query = {}; // Este objeto almacenará los filtros aplicados
+    if (genre) {
+        query.genre = genre; // Si existe el filtro, lo agregamos al query
+    }
+    if (language) {
+        query.language = { $regex: language, $options: 'i' }; // Filtro por localización (case-insensitive)
+    }
+    if (format) {
+        query.format = { $regex: format, $options: 'i' }; // Filtro por localización (case-insensitive)
+    }
+    const allbooks = await getAllBooks(query);
         res.json(allbooks);
+
 });
 
 //Create a book- working
@@ -300,6 +316,45 @@ app.patch('/books/:id/addlist', async (req, res) => {
     console.log(updatebook);
     res.json(updatebook);
 });
+
+
+//Get books with no date read
+app.get('/books/read', async (req, res) => {
+    console.log("random path")
+    const books =  await getAllBooks()
+    const toReadbooks = books.map(book => {
+        book.dateread = null;
+        return book
+        });
+    res.json(toReadbooks);
+    })
+
+
+//Filters
+app.get('/booksfilter', async (req, res) => {
+
+//Parámetros
+const { genre, language, format } = req.query; // Capturamos los parámetros de la URL
+    const query = {}; // Este objeto almacenará los filtros aplicados
+        if (genre) {
+            query.genre = genre; // Si existe el filtro, lo agregamos al query
+        }
+        if (language) {
+            query.language = { $regex: language, $options: 'i' }; // Filtro por localización (case-insensitive)
+        }
+        if (format) {
+            query.format = { $regex: format, $options: 'i' }; // Filtro por localización (case-insensitive)
+        }
+filterBooks(query)
+});
+
+
+//endpoint ej
+//booksfilter?categoria=hogar&precio=alto&localizacion=madrid
+
+
+
+
 
 
 app.listen(3000, () => {

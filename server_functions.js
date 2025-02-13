@@ -34,7 +34,7 @@ MongoClient.connect(mongoUrl, {useNewUrlParser: true, useUnifiedTopology: true})
 
 export const getBookbyId = async (bookId) => {
     try {
-        const filter = {id: parseInt(bookId)};  //////num o string
+        const filter = {id: (bookId)};  //////num o string
         const book = await booksCollection.findOne(filter);
         console.log("The book is in the server");
         return book;
@@ -69,9 +69,9 @@ export const deleteListbyId = async (listId) => {
     } 
 };
 
-export const getAllBooks = async () => {
+export const getAllBooks = async (query) => {
     try { 
-        const books = await booksCollection.find({}).toArray();
+        const books = await booksCollection.find(query).toArray();
         console.log("The books are in servers");
         return books;
     } 
@@ -413,3 +413,13 @@ app.patch('/books/:id/toread', async (req, res) => {
         res.status(500).json({ error: "Error interno del servidor" });
     }
 });
+
+export const filterBooks = async (query) => {
+try { 
+    const booksfiltrados = await booksCollection.find(query).toArray(); 
+    return booksfiltrados; 
+    // Devolvemos los books  filtrados 
+
+} catch (error) { console.error('Error al obtener agricultores:', error); 
+    res.status(500).json({ error: 'Hubo un problema al obtener los books' }); 
+}}
