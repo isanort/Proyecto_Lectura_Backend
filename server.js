@@ -333,20 +333,23 @@ app.get('/books/read', async (req, res) => {
 //Filters
 app.get('/booksfilter', async (req, res) => {
 
-//Parámetros
-const { genre, language, format } = req.query; // Capturamos los parámetros de la URL
-    const query = {}; // Este objeto almacenará los filtros aplicados
-        if (genre) {
-            query.genre = genre; // Si existe el filtro, lo agregamos al query
-        }
-        if (language) {
-            query.language = { $regex: language, $options: 'i' }; // Filtro por localización (case-insensitive)
-        }
-        if (format) {
-            query.format = { $regex: format, $options: 'i' }; // Filtro por localización (case-insensitive)
-        }
-filterBooks(query)
-});
+    //Parámetros
+    const { genre, language, format } = req.query; // Capturamos los parámetros de la URL
+    console.log("booksfilter");
+        const query = {}; // Este objeto almacenará los filtros aplicados
+            if (genre) {
+                query.genre = genre; // Si existe el filtro, lo agregamos al query
+            }
+            if (language) {
+                query.language = language; 
+            }
+            if (format) {
+                query.format =  format; 
+            }
+            console.log(query);
+        const filterBookslist = await filterBooks(query);
+        res.json(filterBookslist);
+    });
 
 
 //endpoint ej

@@ -414,12 +414,15 @@ app.patch('/books/:id/toread', async (req, res) => {
     }
 });
 
-export const filterBooks = async (query) => {
-try { 
-    const booksfiltrados = await booksCollection.find(query).toArray(); 
-    return booksfiltrados; 
-    // Devolvemos los books  filtrados 
 
-} catch (error) { console.error('Error al obtener agricultores:', error); 
-    res.status(500).json({ error: 'Hubo un problema al obtener los books' }); 
-}}
+export const filterBooks = async (query) => {
+    try { 
+        console.log(query);
+        const booksfiltrados = await booksCollection.find(query).toArray(); 
+        console.log(booksfiltrados);
+        return booksfiltrados; 
+        // Devolvemos los books  filtrados 
+    
+    } catch (error) { console.error('Error al obtener agricultores:', error); 
+        res.status(500).json({ error: 'Hubo un problema al obtener los books' }); 
+    }}
