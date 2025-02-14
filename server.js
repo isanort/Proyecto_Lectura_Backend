@@ -97,8 +97,6 @@ app.get('/books/id/:id', async (req, res) => {
         console.log(bookId);
         const thebook = await getBookbyId(bookId);
         res.json(thebook);
-        console.log(thebook);
-        console.log(bookId);
         console.log("The book is out");
 }); 
 
@@ -185,8 +183,10 @@ app.patch('/books/:id/toread', async (req, res) => {
 
 //Modify fav
 app.patch('/books/:id/fav', async (req, res) => {
+    console.log("importante")
     try {
-        const bookId = req.params.id;
+        const bookNum = req.params.id;
+        const bookId = String(bookNum);
         console.log("Petición PATCH recibida para modificar 'fav' de:", bookId);
         const result = await modifyFav(bookId);
         if (result.error) {
@@ -303,18 +303,21 @@ app.delete('/lists/delete/:id', async (req, res) => {
 
 
 //Add list to book, book to list
-app.patch('/books/:id/addlist', async (req, res) => {
+app.patch('/books/:id/addList', async (req, res) => {
     const bookId = req.params.id;
     console.log(bookId);
-    const book = await getBookbyId(bookId);
     const body = req.body;
-    console.log(body);
+    console.log("body", body);
+    console.log("body", body.id);
+    console.log("welcome")
+    const book = await getBookbyId(bookId);
+    console.log(book);
     const listId = body.id;
     console.log(listId);
     const list = await getListbyId(listId);
     const updatebook = await addListToBooks(listId, bookId);
     console.log(updatebook);
-    res.json(updatebook);
+    res.json();
 });
 
 
@@ -355,7 +358,7 @@ app.get('/booksfilter', async (req, res) => {
 //endpoint ej
 //booksfilter?categoria=hogar&precio=alto&localizacion=madrid
 
-
+//app.get('/books/option/', async (req, res) => {
 
 
 

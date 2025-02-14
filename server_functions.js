@@ -288,7 +288,7 @@ export const addListToBooks = async (listId, bookId) => {
     try {
         console.log("Añadiendo lista a al libro:", bookId);
         // Convertir `bookId` a ObjectId si es necesario
-        const filter = { id: parseInt(bookId) };
+        const filter = { id: bookId };
         const filters = { id: listId };
         // Obtener el libro actual
         const book = await getBookbyId(bookId);
@@ -296,9 +296,9 @@ export const addListToBooks = async (listId, bookId) => {
             console.log("Libro no encontrado");
             return { error: "Libro no encontrado" };
         }
-
+        console.log(listId)
         const list = await getListbyId(listId);
-        console.log('liist', list)
+        console.log('liist', listId)
         if (!list) {
             console.log("Lista no encontrado");
             return { error: "Lista no encontrado" };
@@ -331,7 +331,7 @@ export const modifyToRead = async (bookId) => {
     try {
         console.log("Modificando 'toread' del libro:", bookId);
         // Convertir `bookId` a ObjectId si es necesario
-        const filter = { id: parseInt(bookId) };
+        const filter = { id: (bookId) };
         // Obtener el libro actual
         const book = await getBookbyId(bookId);
         if (!book) {
@@ -355,7 +355,7 @@ export const modifyFav = async (bookId) => {
     try {
         console.log("Modificando 'fav' del libro:", bookId);
         // Convertir `bookId` a ObjectId si es necesario
-        const filter = { id: parseInt(bookId) };
+        const filter = { id: bookId };
         // Obtener el libro actual
         const book = await getBookbyId(bookId);
         if (!book) {
@@ -378,7 +378,7 @@ export const modifyOwned = async (bookId) => {
     try {
         console.log("Modificando 'owned' del libro:", bookId);
         // Convertir `bookId` a ObjectId si es necesario
-        const filter = { id: parseInt(bookId) };
+        const filter = { id: (bookId) };
         // Obtener el libro actual
         const book = await getBookbyId(bookId);
         if (!book) {
