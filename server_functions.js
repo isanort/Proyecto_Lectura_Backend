@@ -316,8 +316,11 @@ export const addListToBooks = async (listId, bookId) => {
         const updateBook = await booksCollection.updateOne(filter, { $push: { customlists: updatedValue } });
         const updateList = await listsCollection.updateOne(filters, { $push: { booksInList: updatedValue2 } });
         console.log("Resultado de actualización:", updateBook);
-
-        return updateBook && updateList;
+                        const update = {
+                            updateBook,
+                            updateList
+                        }
+        return updateBook;
         }
         catch (error) { 
             console.error('Error al crear una lista:', error);

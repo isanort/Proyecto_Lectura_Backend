@@ -288,9 +288,19 @@ app.post('/lists', async (req, res) => {
 
 //Modify a list- working
 app.patch('/lists/:id', async (req, res) => {
+    const { name, description } = req.query; 
     const listId = req.params.id;
-    const body = req.body;
-    const updatelist = await modifyList(listId, body);
+    const query = {name, description}; // Este objeto almacenará los filtros aplicados
+    if (name) {
+        query.name = name; // Si existe el filtro, lo agregamos al query
+    }
+    if (description) {
+        query.language = description; 
+    }
+
+    console.log(query);
+    console.log(listId)
+    const updatelist = await modifyList(listId, query);
     res.json(updatelist);
 });
 
@@ -304,20 +314,31 @@ app.delete('/lists/delete/:id', async (req, res) => {
 
 //Add list to book, book to list
 app.patch('/books/:id/addList', async (req, res) => {
-    const bookId = req.params.id;
-    console.log(bookId);
-    const body = req.body;
-    console.log("body", body);
-    console.log("body", body.id);
-    console.log("welcome")
-    const book = await getBookbyId(bookId);
-    console.log(book);
-    const listId = body.id;
-    console.log(listId);
-    const list = await getListbyId(listId);
-    const updatebook = await addListToBooks(listId, bookId);
-    console.log(updatebook);
-    res.json();
+    try {
+        const bookId = req.params.id;
+        const body = req.body;
+        console.log("Petición PATCH recibida para addList 'owned' de:", bookId, body);
+
+        console.log("body", body.id);
+        console.log("body", body.id);
+        console.log("welcome");
+        console.log(bookId);
+
+        const book = await getBookbyId(bookId);
+        console.log(book);
+
+        const listId = body.id;
+        console.log(listId);
+
+        const list = await getListbyId(listId);
+        const updatebook = await addListToBooks(listId, bookId);
+        console.log(updatebook);
+        res.json();
+
+    } catch (error) {
+        console.error("Error en la petición PATCH:", error);
+        res.status(500).json({ error: "Error interno del servidor" });
+    }
 });
 
 
